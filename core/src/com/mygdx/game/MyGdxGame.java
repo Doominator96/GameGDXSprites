@@ -3,59 +3,97 @@ package com.mygdx.game;
 import com.david.objects.EnemyArrow;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.david.objects.EnemyKnight;
+import com.david.objects.HeroDragon;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MyGdxGame extends ApplicationAdapter {
 
+    private EnemyArrow arrow;
+    private HeroDragon hDragon;
+    private EnemyKnight eKnight;
     private List<Sprite> shootList = new ArrayList<Sprite>();
+    private List<Sprite> arrowList = new ArrayList<Sprite>();
     //http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=10351&p=46673#p46673
-    private float shootSpeed = 4;
-    private Sprite dragon;
     private SpriteBatch batch;
+    private Sprite dragon;
     private Sprite knight;
+    private Sprite eArrow;
+    private int arrowShoot;
+    private int fireIntervall;
     int test = 3;
-    private EnemyArrow arrow = new EnemyArrow();
-    private Sprite eArrow = arrow.getArrow();
-    private int arrowShoot = arrow.getShotIntervall();
 
     @Override
     public void create() {
-        FileHandle dragonFile = Gdx.files.internal("gDragon.png");
-        dragon = new Sprite(new Texture(dragonFile));
+        arrow = new EnemyArrow();
+        hDragon = new HeroDragon();
+        eKnight = new EnemyKnight();
+        arrowShoot = arrow.getShotIntervall();
+        dragon = hDragon.getDragon();
         dragon.setPosition(0, 0);
         batch = new SpriteBatch();
 
-        FileHandle knightFile = Gdx.files.internal("knight.png");
-        knight = new Sprite(new Texture(knightFile));
-        knight.setPosition(70, 20);
-
+        knight = eKnight.getKnight();
+        knight.setPosition(Gdx.graphics.getWidth() - knight.getWidth(), 20);
+        eKnight.setAlive(true);
+        eArrow = arrow.getArrow();
+        fireIntervall = hDragon.getFireIntervall();
     }
 
     @Override
     public void render() {
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
         System.out.println("You get to render!!");
         arrowShoot--;
         //may cause problems if I try to create more than 1 enemyArrow Without disposing the last.
         if (arrowShoot == 0) {
-
+            System.out.println("DU KOMMER TILL ARROW");
             eArrow.setPosition(Gdx.graphics.getWidth(), EnemyArrow.getheightCord());
             arrowShoot = arrow.getShotIntervall();
+            System.out.println("HÖJD " + eArrow.getX()+ " " + eArrow.getY());
+            arrowList.add(eArrow);
+            System.out.println(arrowList);
         }
-        if (eArrow.getX() > 0 && eArrow.getX() <= Gdx.graphics.getWidth()) {
-            arrow.translateX(arrow.getSpeed());
+        for (Sprite dragonSpit : shootList) {
+            dragonSpit.translateX(hDragon.getShootSpeed());
+        }
+        for (Iterator<Sprite> it = arrowList.iterator(); it.hasNext();) {
+            eArrow = it.next();
+            eArrow.translateX(arrow.getSpeed());
+            if (eArrow.getX() <= 0) {
+                it.remove();
+            } else {
+                if (eArrow.getBoundingRectangle().overlaps(dragon.getBoundingRectangle())) {
+                    hDragon.setPoints(-1);
+                }
+                for (Sprite dragonSpit : shootList) {
+                    if (eArrow.getBoundingRectangle().overlaps(dragonSpit.getBoundingRectangle())) {
+                        hDragon.setPoints(1);
+                        it.remove();
+                    }
+                }
+            }
+            //it.next();
         }
         System.out.println(shootList);
-        for (Sprite dragon_spit : shootList) {
-            dragon_spit.translateX(shootSpeed);
-        }
+        if(eKnight.isAlive()){
+            knight.translateX(eKnight.getxSpeed());
+            knight.translateY(eKnight.getySpeed());
+        if(knight.getY()<=0){eKnight.setySpeed(1);}
+        if(knight.getY()>=height){eKnight.setySpeed(1);}
+        if(knight.getX()<=0){eKnight.setxSpeed(1);}
+        if(knight.getX()>=width){eKnight.setxSpeed(1);}
+                }
+
         if (Gdx.input.isKeyPressed(Keys.LEFT) && dragon.getX() > 0) {
             dragon.translateX(-2);
         }
@@ -68,12 +106,13 @@ public class MyGdxGame extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Keys.DOWN) && dragon.getY() > 0) {
             dragon.translateY(-2);
         }
-        if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-            FileHandle shotFile = Gdx.files.internal("badlogic.jpg");//animation = fire.gif
-            Sprite newShoot = new Sprite(new Texture(shotFile));
+        if (Gdx.input.isKeyPressed(Keys.SPACE) && fireIntervall <= 0) {
+
+            Sprite newShoot = hDragon.getFire();
             newShoot.setPosition(dragon.getX(), (dragon.getY() - 50));
-            newShoot.setScale(0.1f);
+            newShoot.setScale(hDragon.getShotScale());
             shootList.add(newShoot);
+            fireIntervall = hDragon.getFireIntervall();
         }
 
         Gdx.gl.glClearColor(100, 0, 0, 0);
@@ -81,12 +120,13 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.begin();
         knight.draw(batch);
         dragon.draw(batch);
-        if (eArrow.getX() > 0 && eArrow.getX() <= Gdx.graphics.getWidth()) {
-            eArrow.draw(batch);
+        for (Sprite bow : arrowList) {
+            bow.draw(batch);
         }
-        for (Sprite dragon_spit : shootList) {
-            dragon_spit.draw(batch);
+        for (Sprite dragonSpit : shootList) {
+            dragonSpit.draw(batch);
         }
+        fireIntervall--;
         test--;
         batch.end();
     }
@@ -94,6 +134,8 @@ public class MyGdxGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         System.out.println(test);
+        System.out.println("arrows " + arrowList.size());
+        System.out.println("points: " + hDragon.getPoints());
         batch.dispose();
     }
 }
