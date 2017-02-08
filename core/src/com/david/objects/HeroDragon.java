@@ -17,16 +17,35 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 public class HeroDragon extends Sprite {
 
     //Should not be final if i´m planing "powerups"
-    final int speed = 3;
-    final int shootSpeed = 5;
+    private int speed = 4;
+    private int shootSpeed = 5;
     //allows powerupps with shorter fireIntervall.
     private int fireIntervall = 50;
     private int points = 0;
+    private int health = 5;
     private float shotScale = 0.15f;
     private FileHandle dragonFile = Gdx.files.internal("gDragon.png");
     private FileHandle shotFile = Gdx.files.internal("badlogic.jpg");//animation = fire.gif
     private Sprite dragon = new Sprite(new Texture(dragonFile));
     private Sprite fire = new Sprite(new Texture(shotFile));
+    private boolean alive = true;
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        if (health < 0) {
+            this.health = this.health + health;
+        }
+        if (this.health <= 0) {
+            this.alive = false;
+        }
+    }
 
     public float getShotScale() {
         return shotScale;

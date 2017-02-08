@@ -24,8 +24,19 @@ public class EnemyKnight {
     private int ySpeed = 2;
     private int shotSpeed = 5;
     private int shotInterval = 60;
-    private int health = 15;
+    private int health = 2;
+    private int deathCounter = 1;
     private boolean alive = false;
+
+    public int getDeathCounter() {
+        return deathCounter;
+    }
+
+    public void setDeathCounter(int deathCounter) {
+        if (deathCounter > 0 && deathCounter < 5) {
+            this.deathCounter = this.deathCounter + deathCounter;
+        }
+    }
 
     public int getySpeed() {
         return ySpeed;
@@ -60,11 +71,15 @@ public class EnemyKnight {
     }
 
     public void setHealth(int health) {
-        if (health > 0 && health < 5) {
-            this.health = this.health - health;
-        }
-        if (this.health < 0) {
-            this.setAlive(false);
+        if (health < 0 && health >= -5) {
+            this.health = this.health + health;
+
+            if (this.health < 0) {
+                this.setAlive(false);
+            }
+        } else if (health > 0) {
+            this.health = health;
+            this.setAlive(true);
         }
     }
 
