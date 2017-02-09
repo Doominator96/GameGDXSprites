@@ -138,7 +138,7 @@ public class MyGdxGame extends ApplicationAdapter {
             }
 
             if (Gdx.input.isKeyPressed(Keys.LEFT) && dragon.getX() > 0) {
-                dragon.translateX(hDragon.getSpeed());
+                dragon.translateX(-hDragon.getSpeed());
             }
             if (Gdx.input.isKeyPressed(Keys.RIGHT) && dragon.getX() < Gdx.graphics.getWidth() - dragon.getWidth()) {
                 dragon.translateX(hDragon.getSpeed());

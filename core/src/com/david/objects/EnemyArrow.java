@@ -19,7 +19,7 @@ public class EnemyArrow extends Sprite {
     FileHandle arrowFile = Gdx.files.internal("arrow.png");
     private Sprite arrow = new Sprite(new Texture(arrowFile));
 
-    private int shotIntervall = 60;
+    private int shotIntervall = 100;
     private int speed = -3;
     private boolean active = false;
 

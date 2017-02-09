@@ -24,7 +24,7 @@ public class EnemyKnight {
     private int ySpeed = 2;
     private int shotSpeed = 5;
     private int shotInterval = 60;
-    private int health = 2;
+    private int health = 1;
     private int deathCounter = 1;
     private boolean alive = false;
 
@@ -42,10 +42,18 @@ public class EnemyKnight {
         return ySpeed;
     }
 
+    /**
+     *
+     * @param ySpeed Any int value works, it just inverts the current y-speed
+     */
     public void setySpeed(int ySpeed) {
         this.ySpeed = -this.ySpeed;
     }
 
+    /**
+     *
+     * @param speed Any int value works, it just inverts the current x-speed
+     */
     public void setxSpeed(int speed) {
         this.xSpeed = -this.xSpeed;
     }
