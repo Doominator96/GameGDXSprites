@@ -18,16 +18,16 @@ import java.util.List;
 
 public class MyGdxGame extends ApplicationAdapter {
 
-    private EnemyArrow arrow;
+    private EnemyArrow eArrow;
     private HeroDragon hDragon;
     private EnemyKnight eKnight;
-    private List<Sprite> shootList = new ArrayList<Sprite>();
-    private List<Sprite> arrowList = new ArrayList<Sprite>();
+    private List<Sprite> shootList;
+    private List<Sprite> arrowList;
     //http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=10351&p=46673#p46673
     private SpriteBatch batch;
     private Sprite dragon;
     private Sprite knight;
-    private Sprite eArrow;
+    private Sprite arrow;
     private BitmapFont scoreFont;
     private BitmapFont healthFont;
     private String pointName = "Score: 0";
@@ -39,11 +39,14 @@ public class MyGdxGame extends ApplicationAdapter {
 
     @Override
     public void create() {
-        arrow = new EnemyArrow();
+       arrowList = new ArrayList<Sprite>();
+       shootList = new ArrayList<Sprite>();
+       
+        eArrow = new EnemyArrow();
         hDragon = new HeroDragon();
         eKnight = new EnemyKnight();
         eKnightHP = eKnight.getHealth();
-        arrowShoot = arrow.getShotIntervall();
+        arrowShoot = eArrow.getShotIntervall();
         dragon = hDragon.getDragon();
         dragon.setPosition(0, 0);
         batch = new SpriteBatch();
@@ -51,7 +54,7 @@ public class MyGdxGame extends ApplicationAdapter {
         knight = eKnight.getKnight();
         knight.setPosition(Gdx.graphics.getWidth() - knight.getWidth(), 20);
         eKnight.setAlive(true);
-        eArrow = arrow.getArrow();
+        arrow = eArrow.getArrow();
         scoreFont = new BitmapFont();
         healthFont = new BitmapFont();
         fireIntervall = hDragon.getFireIntervall();
@@ -72,10 +75,11 @@ public class MyGdxGame extends ApplicationAdapter {
             //may cause problems if I try to create more than 1 enemyArrow Without disposing the last.
             if (arrowShoot == 0) {
                 System.out.println("DU KOMMER TILL ARROW");
-                eArrow.setPosition(Gdx.graphics.getWidth(), EnemyArrow.getheightCord());
-                arrowShoot = arrow.getShotIntervall();
+                arrow = new EnemyArrow().getArrow();
+                arrow.setPosition(Gdx.graphics.getWidth(), eArrow.getheightCord());
+                arrowShoot = eArrow.getShotIntervall();
                 System.out.println("HÖJD " + eArrow.getX() + " " + eArrow.getY());
-                arrowList.add(eArrow);
+                arrowList.add(arrow);
                 System.out.println(arrowList);
             }
             for (Iterator<Sprite> it = shootList.iterator(); it.hasNext();) {
@@ -92,21 +96,25 @@ public class MyGdxGame extends ApplicationAdapter {
                 }
             }
             for (Iterator<Sprite> it = arrowList.iterator(); it.hasNext();) {
-                eArrow = it.next();
-                eArrow.translateX(arrow.getSpeed());
-                if (eArrow.getX() <= 0) {
+                System.out.println("You get to arrows");
+                arrow = it.next();
+                arrow.translateX(eArrow.getSpeed());
+                if (arrow.getX() <= 0) {
                     it.remove();
                 } else {
-                    if (eArrow.getBoundingRectangle().overlaps(dragon.getBoundingRectangle())) {
+                    if (arrow.getBoundingRectangle().overlaps(dragon.getBoundingRectangle())) {
                         hDragon.setHealth(-1);
                         //could invoke errors since i later check if the arrow I remove overlaps dragonSpit.
                         it.remove();
-                        System.out.println("FÖRBASKAT KOMPLICERAT " + eArrow);
+                        System.out.println("FÖRBASKAT KOMPLICERAT " + arrow);
                     }
                     for (Sprite dragonSpit : shootList) {
-                        if (eArrow.getBoundingRectangle().overlaps(dragonSpit.getBoundingRectangle())) {
+                        System.out.println("här är jag");
+                        if (arrow.getBoundingRectangle().overlaps(dragonSpit.getBoundingRectangle())) {
                             hDragon.setPoints(1);
+                            System.out.println("Failar härefter");
                             it.remove();
+                            System.out.println("Når aldrig hit");
                         }
                     }
                 }
@@ -130,23 +138,23 @@ public class MyGdxGame extends ApplicationAdapter {
             }
 
             if (Gdx.input.isKeyPressed(Keys.LEFT) && dragon.getX() > 0) {
-                dragon.translateX(-2);
+                dragon.translateX(hDragon.getSpeed());
             }
             if (Gdx.input.isKeyPressed(Keys.RIGHT) && dragon.getX() < Gdx.graphics.getWidth() - dragon.getWidth()) {
-                dragon.translateX(2);
+                dragon.translateX(hDragon.getSpeed());
             }
             if (Gdx.input.isKeyPressed(Keys.UP) && dragon.getY() < Gdx.graphics.getHeight() - dragon.getHeight()) {
-                dragon.translateY(2);
+                dragon.translateY(hDragon.getSpeed());
             }
             if (Gdx.input.isKeyPressed(Keys.DOWN) && dragon.getY() > 0) {
-                dragon.translateY(-2);
+                dragon.translateY(-hDragon.getSpeed());
             }
             if (Gdx.input.isKeyPressed(Keys.SPACE) && fireIntervall <= 0) {
 
-                Sprite newShoot = hDragon.getFire();
-                newShoot.setPosition(dragon.getX(), (dragon.getY() - 50));
-                newShoot.setScale(hDragon.getShotScale());
-                shootList.add(newShoot);
+                Sprite newDragonSpit = new HeroDragon().getFire();
+                newDragonSpit.setPosition(dragon.getX(), (dragon.getY() - 50));
+                newDragonSpit.setScale(hDragon.getShotScale());
+                shootList.add(newDragonSpit);
                 fireIntervall = hDragon.getFireIntervall();
             }
             if (dragon.getBoundingRectangle().overlaps(knight.getBoundingRectangle())) {
@@ -165,7 +173,10 @@ public class MyGdxGame extends ApplicationAdapter {
                 knight.draw(batch);
             }
             dragon.draw(batch);
+            System.out.println("Storlek för arrowlist "+arrowList.size());
             for (Sprite bow : arrowList) {
+                System.out.println("Kordinat för var pil "+bow.getX());
+                System.out.println("FÖR VAR PIL");
                 bow.draw(batch);
             }
             for (Sprite dragonSpit : shootList) {

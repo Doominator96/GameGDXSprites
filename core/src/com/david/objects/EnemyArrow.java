@@ -5,7 +5,6 @@
  */
 package com.david.objects;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,7 +19,9 @@ public class EnemyArrow extends Sprite {
     FileHandle arrowFile = Gdx.files.internal("arrow.png");
     private Sprite arrow = new Sprite(new Texture(arrowFile));
 
-    private int shotIntervall = 180;
+    private int shotIntervall = 60;
+    private int speed = -3;
+    private boolean active = false;
 
     public int getShotIntervall() {
         return shotIntervall;
@@ -29,8 +30,6 @@ public class EnemyArrow extends Sprite {
     public void setShotIntervall(int shotIntervall) {
         this.shotIntervall = shotIntervall;
     }
-    private int speed = -3;
-    private boolean active = false;
 
     public Sprite getArrow() {
         return arrow;
@@ -56,7 +55,7 @@ public class EnemyArrow extends Sprite {
         this.active = active;
     }
 
-    public static int getheightCord() {
+    public int getheightCord() {
         int temp = (int) (Math.random() * 1000);
         if (temp > 500) {
             while (temp > 500) {

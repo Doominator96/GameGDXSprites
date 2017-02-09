@@ -17,10 +17,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 public class HeroDragon extends Sprite {
 
     //Should not be final if i´m planing "powerups"
-    private int speed = 4;
+    private int speed = 3;
     private int shootSpeed = 5;
     //allows powerupps with shorter fireIntervall.
-    private int fireIntervall = 50;
+    private int fireIntervall = 30;
     private int points = 0;
     private int health = 5;
     private float shotScale = 0.15f;
