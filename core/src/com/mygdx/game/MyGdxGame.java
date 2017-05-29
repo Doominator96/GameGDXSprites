@@ -16,6 +16,7 @@ import com.david.objects.HeroDragon;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 public class MyGdxGame extends ApplicationAdapter {
 
@@ -33,6 +34,7 @@ public class MyGdxGame extends ApplicationAdapter {
     private BitmapFont healthFont;
     private String pointName = "Score: 0";
     public String dragonHealth = "Health: -err-";
+    String username;
     private int arrowShoot;
     private int fireIntervall;
     private int eKnightHP;
@@ -40,9 +42,10 @@ public class MyGdxGame extends ApplicationAdapter {
 
     @Override
     public void create() {
-       arrowList = new ArrayList<Sprite>();
-       shootList = new ArrayList<Sprite>();
-       
+        username = JOptionPane.showInputDialog("Your username");
+        arrowList = new ArrayList<Sprite>();
+        shootList = new ArrayList<Sprite>();
+
         eArrow = new EnemyArrow();
         hDragon = new HeroDragon();
         eKnight = new EnemyKnight();
@@ -158,9 +161,9 @@ public class MyGdxGame extends ApplicationAdapter {
                 shootList.add(newDragonSpit);
                 fireIntervall = hDragon.getFireIntervall();
             }
-            if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
+            if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
                 int n = MethodController.pauseOptions();
-                
+
             }
             if (dragon.getBoundingRectangle().overlaps(knight.getBoundingRectangle())) {
                 eKnight.setAlive(false);
@@ -178,9 +181,9 @@ public class MyGdxGame extends ApplicationAdapter {
                 knight.draw(batch);
             }
             dragon.draw(batch);
-            System.out.println("Storlek för arrowlist "+arrowList.size());
+            System.out.println("Storlek för arrowlist " + arrowList.size());
             for (Sprite bow : arrowList) {
-                System.out.println("Kordinat för var pil "+bow.getX());
+                System.out.println("Kordinat för var pil " + bow.getX());
                 System.out.println("FÖR VAR PIL");
                 bow.draw(batch);
             }
@@ -197,18 +200,20 @@ public class MyGdxGame extends ApplicationAdapter {
             fireIntervall--;
             test--;
         } else {
+            if (username == null)JOptionPane.showMessageDialog(null, "Your username: " + username);
+            
             dragonHealth = "\nHealth: -" + hDragon.getHealth() + "-";
             pointName = "GAME OVER!!!\nScore: " + hDragon.getPoints();
             Gdx.gl.glClearColor(0, 0, 0, 0);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-             batch.begin();            
-             scoreFont.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-            scoreFont.draw(batch, pointName, width/2, height/2);
+            batch.begin();
+            scoreFont.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+            scoreFont.draw(batch, pointName, width / 2, height / 2);
             healthFont.setColor(1.0f, 100.0f, 1.0f, 1.0f);
-            healthFont.draw(batch, dragonHealth, width/2, height/2-20);
-             
-             batch.end();
-            
+            healthFont.draw(batch, dragonHealth, width / 2, height / 2 - 20);
+
+            batch.end();
+
         }
     }
 
@@ -218,5 +223,6 @@ public class MyGdxGame extends ApplicationAdapter {
         System.out.println("arrows " + arrowList.size());
         System.out.println("points: " + hDragon.getPoints());
         batch.dispose();
+        
     }
 }
