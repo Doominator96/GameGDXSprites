@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.david.methods.MethodController;
 import com.david.objects.EnemyKnight;
 import com.david.objects.HeroDragon;
 import java.util.ArrayList;
@@ -156,6 +157,10 @@ public class MyGdxGame extends ApplicationAdapter {
                 newDragonSpit.setScale(hDragon.getShotScale());
                 shootList.add(newDragonSpit);
                 fireIntervall = hDragon.getFireIntervall();
+            }
+            if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
+                int n = MethodController.pauseOptions();
+                
             }
             if (dragon.getBoundingRectangle().overlaps(knight.getBoundingRectangle())) {
                 eKnight.setAlive(false);
